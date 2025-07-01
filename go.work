@@ -1,0 +1,14 @@
+go 1.24.1
+
+use (
+	./aj
+	./config
+	./database
+	./keys-service
+	./logger
+	./nats
+	./records-service
+	./seeder
+	./signing-service
+	./types
+)

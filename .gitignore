@@ -1,0 +1,68 @@
+.DS_Store
+
+debug/
+target/
+
+**/*.rs.bk
+
+*.pdb
+
+.idea/
+.vscode
+aj
+
+**/Cargo.lock
+!./Cargo.lock
+
+
+
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+!.env.sample
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+jetstream-data
+
+
+**.log
+
+**/postgres/data
+**/database/data
+
+**/nats/data

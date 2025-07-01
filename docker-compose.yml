@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DOCKER_COMPOSE_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DOCKER_COMPOSE_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${DOCKER_COMPOSE_POSTGRES_DB}
+    volumes:
+      - ./database/migrations:/docker-entrypoint-initdb.d
+      - ./database/data:/var/lib/postgresql/data
+
+  nats:
+    image: nats:latest
+    restart: always
+    ports:
+      - 4222:4222
+      - 8222:8222
+    volumes:
+      - ./nats/data:/data
+    command:
+      [
+        "-p",
+        "4222",
+        "-m",
+        "8222",
+        "--name",
+        "vaultstream-nats",
+        "--user",
+        "admin",
+        "--pass",
+        "$VAULTSTREAM_NATS_PASSWORD",
+        "--js",
+        "--sd=/data",
+        "-D",
+      ]
+    env_file:
+      - .env
+volumes:
+  postgres-data:
+    driver: local
