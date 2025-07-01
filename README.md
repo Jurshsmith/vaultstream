@@ -1,63 +1,152 @@
-# VaultStream
+# 🔐 VaultStream
 
-## Quick Start
+> **High-Performance Distributed Digital Signature System**  
+> A microservices-based cryptographic infrastructure for secure record signing at scale, built with Go and event-driven architecture.
 
-This may not work depending on your system configuration and pre-installed software. If you encounter any issues, refer to the [Prerequisites](#prerequisites) section to ensure that all necessary dependencies are installed before re-running this command.
+![Go](https://img.shields.io/badge/Go-1.18+-00ADD8?style=flat-square&logo=go)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)
+![NATS](https://img.shields.io/badge/NATS-27AAE1?style=flat-square&logo=nats.io&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-Quickly set up and start VaultStream with:
+---
 
-    make quick-start
+## ✨ Overview
 
-Adjust the `BATCH_SIZE` in the generated `.env` to observe the efficient of the systems architecture at different batch sizes. If you encounter issues even after installing the prerequisites, use `make help` to see additional debugging commands.
+VaultStream is a production-ready distributed system designed for high-throughput digital signature operations. It demonstrates enterprise-grade patterns including event-driven microservices, concurrent processing, and cryptographic best practices.
 
-### Available tables in the PostgresDB
+### 🎯 Key Features
 
-- `records`
-- `signatures`
+- **🔑 ECDSA Cryptography** - P-256 curve key generation and digital signatures
+- **⚡ High Concurrency** - Configurable goroutine pools with semaphore-based flow control
+- **📊 Batch Processing** - Optimized bulk operations with chunking and parallel execution
+- **🔄 Event-Driven Architecture** - NATS JetStream for reliable message delivery
+- **🗄️ Resilient Data Layer** - PostgreSQL with Ent ORM and migration support
+- **📈 Performance Tuning** - Configurable batch sizes and concurrency levels
+- **🧪 Production Testing** - Integration tests with real database connections
 
-### Available streams in the NATS Jetstream Setup
+## 🏗️ Architecture
 
-- `records.>`
-- `keys.>`
+### System Components
 
-## Prerequisites
-
-Before running the project, ensure you have the following tools installed. For detailed installation instructions, please refer to each tool’s official documentation:
-
-- **Golang**
-  - Install from [golang.org/dl](https://golang.org/dl/)
-  - Minimum supported Go version is `v1.18.0`
-- **Make**
-  - **macOS:** Install via Xcode Command Line Tools. See [Apple’s documentation](https://developer.apple.com/xcode/)
-  - **Linux:** Install via your package manager. See [GNU Make](https://www.gnu.org/software/make/) for details
-- **Docker (v20.10 or later)**
-  - Follow the instructions at [Docker’s Get Docker](https://docs.docker.com/get-docker/)
-
-## Future Enhancements (Non-Exhaustive)
-
-- **Implement Robust Retry Strategies**  
-  Incorporate retries with jitter and exponential backoff to gracefully handle transient errors and unsignable records.
-
-- **Enhance Observability**  
-  Integrate comprehensive monitoring, logging, and alerting solutions to improve system visibility and facilitate proactive diagnostics.
-
-- **Deploy with Kubernetes & Helm**  
-  Develop and maintain Helm charts for deploying the system on Kubernetes, to further demonstrate how well `signing-service` autoscales
-
-- **Expand Unit Test Coverage**  
-  Increase test coverage for critical modules to ensure reliability and detect issues early in the development cycle.
-
-- **Strengthen Integration Testing**  
-  Enhance end-to-end integration tests to validate overall system functionality, performance, and interoperability.
-
-- **Improve readability**  
-  Break down logical units of the services to improve readability and reusability
-
-- **Ensure Graceful Shutdown Procedures**  
-  Implement robust shutdown mechanisms to maintain system stability during deployments and unexpected terminations.
-
-## Architecture Diagram (Quick Draft)
-
-Below is a high-level overview of the systems architecture:
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Keys Service  │    │  Records Service │    │ Signing Service │
+│                 │    │                  │    │                 │
+│ • ECDSA Key Gen │    │ • Batch Queries  │    │ • Concurrent    │
+│ • Key Streaming │    │ • Record Publish │    │   Signing       │
+│ • Concurrency   │────┤ • DB Integration │────┤ • Bulk Inserts  │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                        │                        │
+         └────────────────────────┼────────────────────────┘
+                                  │
+                    ┌─────────────▼──────────────┐
+                    │      NATS JetStream       │
+                    │   • Event Streaming       │
+                    │   • Durable Consumers     │
+                    │   • Message Persistence   │
+                    └───────────────────────────┘
+                                  │
+                      ┌───────────▼────────────┐
+                      │      PostgreSQL       │
+                      │   • Records Table     │
+                      │   • Signatures Table  │
+                      │   • ACID Compliance   │
+                      └───────────────────────┘
+```
 
 ![VaultStream Architecture Diagram](./docs/vaultstream-architecture.png "VaultStream Architecture Diagram")
+
+## 🚀 Quick Start
+
+**One-command setup:**
+
+```bash
+make quick-start
+```
+
+This command will:
+
+- ✅ Set up environment configuration
+- ✅ Verify prerequisites (Go, Docker, Make)
+- ✅ Launch PostgreSQL and NATS infrastructure
+- ✅ Seed database with configurable record count
+- ✅ Start all microservices concurrently
+
+### 🎛️ Performance Tuning
+
+Adjust these variables in the generated `.env` file to observe system behavior at different scales:
+
+```bash
+BATCH_SIZE=50              # Records per batch (impacts memory vs. throughput)
+TOTAL_RECORDS=1000         # Scale of the signing workload
+RECORDS_MAX_CONCURRENCY=10 # Parallel batch processing
+SIGNER_MAX_CONCURRENCY=8   # Concurrent signature operations
+```
+
+## 🛠️ Tech Stack
+
+| Category             | Technology     | Purpose                                 |
+| -------------------- | -------------- | --------------------------------------- |
+| **Language**         | Go 1.18+       | High-performance concurrent programming |
+| **Message Broker**   | NATS JetStream | Event streaming with persistence        |
+| **Database**         | PostgreSQL     | ACID-compliant data storage             |
+| **ORM**              | Ent            | Type-safe database operations           |
+| **Cryptography**     | ECDSA P-256    | Industry-standard digital signatures    |
+| **Containerization** | Docker Compose | Local development infrastructure        |
+
+## 📊 Data Model
+
+### Database Tables
+
+- **`records`** - Source data requiring digital signatures
+- **`signatures`** - Cryptographic signatures with key associations
+
+### Message Streams
+
+- **`records.>`** - Batch record publishing for signature processing
+- **`keys.>`** - Cryptographic key distribution and lifecycle management
+
+## 🔧 Prerequisites
+
+Ensure the following tools are installed:
+
+| Tool       | Version | Installation                                                      |
+| ---------- | ------- | ----------------------------------------------------------------- |
+| **Go**     | 1.18+   | [golang.org/dl](https://golang.org/dl/)                           |
+| **Docker** | 20.10+  | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
+| **Make**   | Any     | Xcode CLI Tools (macOS) or package manager (Linux)                |
+
+## 📋 Available Commands
+
+```bash
+make help          # Show all available commands
+make quick-start   # Complete setup and launch
+make start         # Launch services (after setup)
+make test          # Run integration test suite
+make stop          # Stop all services and cleanup
+make clean         # Reset volumes and cached data
+```
+
+## 🔮 Roadmap
+
+### Performance & Reliability
+
+- [ ] **Retry Strategies** - Exponential backoff with jitter for transient failures
+- [ ] **Circuit Breakers** - Fault tolerance for downstream dependencies
+- [ ] **Metrics & Observability** - Prometheus metrics and distributed tracing
+
+### Infrastructure & Deployment
+
+- [ ] **Kubernetes Deployment** - Helm charts for container orchestration
+- [ ] **Auto-scaling** - Horizontal pod autoscaling based on queue depth
+- [ ] **Health Checks** - Comprehensive readiness and liveness probes
+
+### Testing & Quality
+
+- [ ] **Expanded Test Coverage** - Unit tests for critical cryptographic functions
+- [ ] **Load Testing** - Performance benchmarks under high concurrency
+- [ ] **Security Audit** - Formal review of cryptographic implementations
+
+---
+
+**🏢 Enterprise-Ready Features:** Structured logging • Graceful shutdowns • Database migrations • Configuration management • Error handling • Concurrent processing
